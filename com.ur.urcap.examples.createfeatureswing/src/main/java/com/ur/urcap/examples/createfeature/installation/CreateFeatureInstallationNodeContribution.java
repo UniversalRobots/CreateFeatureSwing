@@ -7,9 +7,9 @@ import com.ur.urcap.api.domain.data.DataModel;
 import com.ur.urcap.api.domain.feature.Feature;
 import com.ur.urcap.api.domain.feature.FeatureContributionModel;
 import com.ur.urcap.api.domain.script.ScriptWriter;
-import com.ur.urcap.api.domain.userinteraction.RobotPositionCallback;
-import com.ur.urcap.api.domain.value.Pose;
+import com.ur.urcap.api.domain.userinteraction.RobotPositionCallback2;
 import com.ur.urcap.api.domain.value.jointposition.JointPositions;
+import com.ur.urcap.api.domain.value.robotposition.PositionParameters;
 
 public class CreateFeatureInstallationNodeContribution implements InstallationNodeContribution {
 	private static final String FEATURE_KEY = "FeatureKey";
@@ -56,24 +56,24 @@ public class CreateFeatureInstallationNodeContribution implements InstallationNo
 	}
 
 	void createFeature() {
-		userInterfaceAPI.getUserInteraction().getUserDefinedRobotPosition(new RobotPositionCallback() {
+		userInterfaceAPI.getUserInteraction().getUserDefinedRobotPosition(new RobotPositionCallback2() {
 			@Override
-			public void onOk(Pose pose, JointPositions jointPositions) {
-				Feature feature = featureContributionModel.addFeature(FEATURE_KEY, SUGGESTED_FEATURE_NAME, pose);
+			public void onOk(PositionParameters positionParameters) {
+				Feature feature = featureContributionModel.addFeature(FEATURE_KEY, SUGGESTED_FEATURE_NAME, positionParameters.getPose());
 				model.set(FEATURE_KEY, feature);
 				// joint positions are not part of the feature. They are only used by the program node, for creating waypoints
-				model.set(FEATURE_JOINT_ANGLES_KEY, jointPositions);
+				model.set(FEATURE_JOINT_ANGLES_KEY, positionParameters.getJointPositions());
 				view.featureIsCreated(true);
 			}
 		});
 	}
 
 	void updateFeature() {
-		userInterfaceAPI.getUserInteraction().getUserDefinedRobotPosition(new RobotPositionCallback() {
+		userInterfaceAPI.getUserInteraction().getUserDefinedRobotPosition(new RobotPositionCallback2() {
 			@Override
-			public void onOk(Pose pose, JointPositions jointPositions) {
-				featureContributionModel.updateFeature(FEATURE_KEY, pose);
-				model.set(FEATURE_JOINT_ANGLES_KEY, jointPositions);
+			public void onOk(PositionParameters positionParameters) {
+				featureContributionModel.updateFeature(FEATURE_KEY, positionParameters.getPose());
+				model.set(FEATURE_JOINT_ANGLES_KEY, positionParameters.getJointPositions());
 			}
 		});
 

@@ -38,6 +38,7 @@ public class UseFeatureProgramNodeContribution implements ProgramNodeContributio
 	private final PoseFactory poseFactory;
 
 	private boolean moveCreationPossible = true;
+	private final Pose toolFlangeOffset;
 
 	UseFeatureProgramNodeContribution(ProgramAPIProvider apiProvider, UseFeatureProgramNodeView view) {
 		poseFactory = apiProvider.getProgramAPI().getValueFactoryProvider().getPoseFactory();
@@ -47,6 +48,8 @@ public class UseFeatureProgramNodeContribution implements ProgramNodeContributio
 		programNodeFactory = programModel.getProgramNodeFactory();
 		final TreeNode rootNode = programModel.getRootTreeNode(this);
 		rootNode.setChildSequenceLocked(true);
+
+		toolFlangeOffset = poseFactory.createPose(0, 0, 0, 0, 0, 0, Length.Unit.M, Angle.Unit.RAD);
 	}
 
 	@Override
@@ -156,7 +159,7 @@ public class UseFeatureProgramNodeContribution implements ProgramNodeContributio
 		WaypointMotionParameters sharedMotionParameters = configFactory.createSharedMotionParameters();
 		JointPositions featureJointPositions = getInstallationNode().getFeatureJointPositions();
 		FixedPositionDefinedWaypointNodeConfig fixedPositionConfig =
-				configFactory.createFixedPositionConfig(waypointPose, featureJointPositions, noBlendParameters, sharedMotionParameters);
+				configFactory.createFixedPositionConfig(waypointPose, featureJointPositions, toolFlangeOffset, noBlendParameters, sharedMotionParameters);
 		waypoint.setConfig(fixedPositionConfig);
 	}
 
